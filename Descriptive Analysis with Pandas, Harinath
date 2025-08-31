@@ -1,0 +1,123 @@
+
+This notebook explores the Titanic dataset using Pandas.
+We perform descriptive analysis to understand variables and patterns.
+
+Markdown Cell
+First Steps: Know Your Data
+
+We begin by loading the Titanic dataset and checking its structure.
+Basic exploration helps us view rows, columns, and sample records.
+
+Code Cell
+import pandas as pd
+import matplotlib.pyplot as plt
+
+titanic = pd.read_csv("../data/titanic.csv.bz2")
+
+titanic.shape
+titanic.head()
+titanic.tail()
+titanic.sample(5)
+
+
+We can also extract specific records for detailed observation.
+Here we fetch the 1000th row with name and survival status.
+
+Code Cell
+titanic.loc[999, ["name", "survived"]]
+
+Markdown Cell
+Variables and Values
+
+This step checks available variables, their types, and unique values.
+It helps us understand the data structure for further analysis.
+
+Code Cell
+titanic.columns
+titanic.dtypes
+titanic.sex.unique()
+titanic.sex.value_counts()
+
+
+We then explore numerical variables like age and passenger class.
+Finding min, mean, and unique values gives insights into distribution.
+
+Code Cell
+titanic["age"].min()
+titanic["age"].mean()
+titanic["pclass"].unique()
+titanic["pclass"].nunique()
+
+Markdown Cell
+Continuous Variables
+
+Continuous variables are summarized using statistical measures.
+Here we calculate min, max, mean for age and survival rate.
+
+Code Cell
+titanic["age"].min(), titanic["age"].max(), titanic["age"].mean()
+titanic["survived"].mean()
+
+children = titanic[titanic.age < 18]
+children.shape[0]
+children.shape[0] / titanic.shape[0]
+
+Markdown Cell
+Filtering Data
+
+Filtering helps select subsets of data based on conditions.
+Here we extract passengers who boarded lifeboat A or B.
+
+Code Cell
+titanic[(titanic.boat == "A") | (titanic.boat == "B")]
+
+Markdown Cell
+Selecting and Dropping Variables
+
+We can select specific columns for analysis.
+Unnecessary columns may also be dropped from the dataset.
+
+Code Cell
+titanic[["survived", "age", "sex"]]
+titanic.drop(["body", "cabin", "boat"], axis=1)
+
+
+We can also visualize data distributions using histograms.
+Here we compare the age distribution of males and females.
+
+Code Cell
+male = titanic[titanic.sex == "male"]
+female = titanic[titanic.sex == "female"]
+
+plt.hist([male.age.dropna(), female.age.dropna()], bins=20, stacked=True, label=['Male', 'Female'])
+plt.xlabel("Age")
+plt.ylabel("Count")
+plt.legend()
+plt.show()
+
+Markdown Cell
+Grouped Operations
+
+Grouping allows us to analyze survival rate by categories.
+We compare survival across gender and passenger class.
+
+Code Cell
+titanic.groupby("sex")["survived"].mean()
+titanic.groupby(["sex", "pclass"])["survived"].mean()
+
+Markdown Cell
+String Operations
+
+String functions help clean and extract information from text columns.
+Here we analyze cabin values and create a new deck variable.
+
+Code Cell
+titanic.cabin.head()
+(titanic.cabin == " ").sum()
+
+import re
+pattern = re.compile("[A-Za-z]+[0-9]+")
+titanic.cabin.str.match(pattern).sum()
+
+titanic["deck"] = titanic.cabin.str[0]
+titanic.deck.value_counts()
